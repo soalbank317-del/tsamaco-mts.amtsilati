@@ -88,7 +88,7 @@ footer{ margin-top:20px; text-align:center; color:var(--muted); font-size:13px;}
   </div>
 
   <div class="search">
-    <input id="q" placeholder="Ketik nama mapel (contoh: MTK, IPA, Akidah...)">
+    <input id="q" placeholder="Ketik nama file mapel...">
   </div>
 
   <div id="results" class="results" aria-live="polite"></div>
@@ -103,20 +103,20 @@ function parseCSV(text){
   const rows = text.split(/\r?\n/).filter(r=>r.trim()!=="");
   if(!rows.length) return [];
   const header = rows.shift().split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(h=>h.trim().toLowerCase());
-  const iIcon = header.indexOf("ikon");
-  const iMapel = header.indexOf("mapel");
-  const iKelas = header.indexOf("kelas");
+  const iNama = header.indexOf("nama file");
   const iLink = header.indexOf("link file");
+  const iIcon = header.indexOf("ikon");
   return rows.map(line=>{
     const cols = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c=>c.replace(/^"|"$/g,'').trim());
     return {
-      ikon: (iIcon>-1 ? cols[iIcon]:"")||"",
-      nama: cols[iMapel] + " (Kelas " + cols[iKelas] + ")",
-      link: cols[iLink]||"#"
+      nama: cols[iNama] || "Untitled",
+      link: cols[iLink] || "#",
+      ikon: cols[iIcon] || ""
     };
   });
 }
 
+// Default icons for known mapels
 const MAPEL_ICONS = {
   "Al-Qur'an Hadist": "📖",
   "Akidah Akhlak": "🕌",
@@ -177,7 +177,7 @@ async function load(){
     const text = await res.text();
     all = parseCSV(text);
     all.sort((a,b)=>a.nama.localeCompare(b.nama));
-    // Tidak render semua di awal, tunggu input user
+    // Halaman awal kosong, render tunggu input
   }catch(err){
     document.getElementById('results').innerHTML=`<div class="empty">Gagal mengambil data: ${err.message}</div>`;
     console.error(err);
