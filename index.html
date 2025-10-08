@@ -15,7 +15,6 @@
       margin:0; font-family:"Open Sans",sans-serif; background:var(--bg); color:var(--text);
     }
 
-    /* HEADER & SEARCH */
     header{
       background:#fff; padding:12px 18px;
       box-shadow:0 1px 6px rgba(2,6,23,0.06);
@@ -44,16 +43,14 @@
     }
     .search button:hover{ background:var(--accent-dark); }
 
-    /* GRID RESULT */
     main{ max-width:1300px; margin:18px auto; padding:0 18px 48px; }
     .results{
       display:grid; grid-template-columns:repeat(4,1fr); gap:16px;
     }
     @media(max-width:1100px){ .results{ grid-template-columns:repeat(3,1fr);} }
-    @media(max-width:800px){ .results{ grid-template-columns:repeat(2,1fr);} }
+    @media(max-width: 800px){ .results{ grid-template-columns:repeat(2,1fr);} }
     @media(max-width:500px){ .results{ grid-template-columns:1fr;} }
 
-    /* CARD */
     .card{
       background:var(--card); border-radius:12px; padding:16px;
       text-align:center; box-shadow:0 6px 18px rgba(2,6,23,0.06);
@@ -91,7 +88,7 @@
 </main>
 
 <script>
-const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT1s3KCGJWMcqWQkTppTXiuZMxxFUPJVLIxttNtOFRg2tzDT7kDeWxOyVofc8Fa7-PAQj8IiLD_S1Sw/pub?output=csv";
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ8fnJ3AZFJ52mtTjF2F5mUJGqtApx4D-baFSmUBBlL6cG6s9mDqt3SZOdDzZnwO4Lcr2oOzRXWFzZE/pub?output=csv";
 let dataAll = [];
 
 function csvToObjects(csv){
@@ -112,39 +109,39 @@ function csvToObjects(csv){
   });
 }
 
-function highlight(text,q){
+function highlight(text, q){
   if(!q) return text;
   const re = new RegExp(q,'ig');
   return text.replace(re, m=>`<mark class="hi">${m}</mark>`);
 }
 
-function render(list,q=""){
+function render(list, q=""){
   const results = document.getElementById("results");
   const empty = document.getElementById("empty");
   results.innerHTML = "";
 
   if(!list.length){
-    empty.style.display="";
-    results.style.display="none";
-    document.getElementById('footer').textContent="Menampilkan 0 file | @pacegondes 2025";
+    empty.style.display = "";
+    results.style.display = "none";
+    document.getElementById('footer').textContent = "Menampilkan 0 file | @pacegondes 2025";
     return;
   }
 
-  empty.style.display="none";
-  results.style.display="grid";
+  empty.style.display = "none";
+  results.style.display = "grid";
   list.forEach(item=>{
     const card = document.createElement("div");
-    card.className="card";
-    card.innerHTML=`
+    card.className = "card";
+    card.innerHTML = `
       <div class="icon">${item.ikon}</div>
-      <div class="name">${highlight(item.nama,q)}</div>
+      <div class="name">${highlight(item.nama, q)}</div>
       <a class="open-btn" href="${item.link}" target="_blank">Buka</a>
     `;
     card.addEventListener("click", e=>{
-      if(e.target.tagName==="A") return;
-      card.style.transform="scale(1.05)";
-      setTimeout(()=>card.style.transform="",200);
-      window.open(item.link,"_blank");
+      if(e.target.tagName === "A") return;
+      card.style.transform = "scale(1.05)";
+      setTimeout(()=>card.style.transform = "", 200);
+      window.open(item.link, "_blank");
     });
     results.appendChild(card);
   });
@@ -153,22 +150,25 @@ function render(list,q=""){
 }
 
 async function load(){
-  try{
+  try {
     const res = await fetch(CSV_URL);
-    if(!res.ok) throw new Error("HTTP "+res.status);
+    if(!res.ok) throw new Error("HTTP " + res.status);
     const txt = await res.text();
     dataAll = csvToObjects(txt);
     render(dataAll);
-  }catch(e){
-    document.getElementById("results").innerHTML=`<div class="empty">Gagal ambil data: ${e.message}</div>`;
+  } catch(e) {
+    document.getElementById("results").innerHTML = `<div class="empty">Gagal ambil data: ${e.message}</div>`;
   }
 }
 
 function doSearch(){
   const q = document.getElementById("q").value.trim().toLowerCase();
-  if(!q){ render(dataAll); return; }
-  const filtered = dataAll.filter(x=>x.nama.toLowerCase().includes(q));
-  render(filtered,q);
+  if(!q) {
+    render(dataAll);
+    return;
+  }
+  const filtered = dataAll.filter(x => x.nama.toLowerCase().includes(q));
+  render(filtered, q);
 }
 
 document.getElementById("q").addEventListener("input", doSearch);
@@ -176,4 +176,3 @@ load();
 </script>
 </body>
 </html>
-
